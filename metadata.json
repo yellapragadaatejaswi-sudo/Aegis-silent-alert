@@ -1,0 +1,6 @@
+{
+  "name": "Aegis Silent Alert",
+  "description": "A silent emergency alert system disguised as a functional calculator, featuring live GPS tracking and shake-to-trigger safety.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}
