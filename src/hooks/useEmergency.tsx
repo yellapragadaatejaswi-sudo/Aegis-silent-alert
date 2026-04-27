@@ -80,23 +80,56 @@ export function EmergencyProvider({ children }: { children: React.ReactNode }) {
     setContacts(prev => prev.filter(c => c.id !== id));
   };
 
-  const triggerAlert = useCallback(() => {
+  const triggerAlert = useCallback(async () => {
     setStatus('ALERT_SENT');
     
+    let currentPos: { lat: number, lng: number } | null = null;
+
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setLocation({
+      try {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { 
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          });
+        });
+        
+        currentPos = {
           lat: position.coords.latitude,
           lng: position.coords.longitude
-        });
+        };
+        setLocation(currentPos);
         setStatus('TRACKING');
-      }, (err) => {
-        console.error("GPS Error:", err);
-      }, { enableHighAccuracy: true });
+      } catch (err) {
+        console.error("GPS Acquisition failed, sending fallback alert:", err);
+      }
     }
 
-    // Mock SMS send
-    console.log("SENDING EMERGENCY SMS TO:", contacts.map(c => c.phone));
+    // Send SMS with Resolved Location
+    contacts.forEach(async (contact) => {
+      try {
+        const mapsLink = currentPos 
+          ? `https://www.google.com/maps?q=${currentPos.lat},${currentPos.lng}`
+          : "Location Unavailable (GPS Lock Pending)";
+
+        const response = await fetch('/api/send-sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: contact.phone,
+            message: `AEGIS EMERGENCY: ${mapsLink}`
+          })
+        });
+        const result = await response.json();
+        if (result.simulated) {
+          console.warn(`SMS for ${contact.name} was SIMULATED. Add Twilio keys to Secrets.`);
+        }
+      } catch (err) {
+        console.error("SMS Request Failed:", err);
+      }
+    });
+
   }, [contacts]);
 
   const resetAlert = () => {

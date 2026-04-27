@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Trash2, ArrowLeft, ShieldCheck, Phone, User } from 'lucide-react';
 import { useEmergency } from '../hooks/useEmergency';
