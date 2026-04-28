@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserPlus, Trash2, ArrowLeft, ShieldCheck, Phone, User } from 'lucide-react';
+import { UserPlus, Trash2, ArrowLeft, ShieldCheck, Phone, User, FileText } from 'lucide-react';
 import { useEmergency } from '../hooks/useEmergency';
 
-export default function ContactsManager({ onBack }: { onBack: () => void }) {
+export default function ContactsManager({ onBack, onOpenReport }: { onBack: () => void, onOpenReport?: () => void }) {
   const { contacts, addContact, removeContact } = useEmergency();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -136,8 +136,15 @@ export default function ContactsManager({ onBack }: { onBack: () => void }) {
         </section>
       </main>
 
-      <footer className="py-8 text-center">
-        <p className="text-[10px] text-zinc-700 font-mono tracking-widest">END TO END ENCRYPTED SYNC</p>
+      <footer className="py-6 space-y-4 border-t border-zinc-900 mt-auto">
+        <button
+          onClick={onOpenReport}
+          className="w-full py-3 px-4 rounded-xl glass border-hw-accent-orange/10 flex items-center justify-center gap-2 text-hw-accent-orange hover:bg-hw-accent-orange/5 transition-colors"
+        >
+          <FileText size={16} />
+          <span className="text-[10px] font-bold uppercase tracking-widest">Project Documentation</span>
+        </button>
+        <p className="text-[10px] text-zinc-700 font-mono tracking-widest text-center">END TO END ENCRYPTED SYNC</p>
       </footer>
     </div>
   );

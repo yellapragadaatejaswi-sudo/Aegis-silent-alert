@@ -13,11 +13,12 @@ import { EmergencyProvider, useEmergency } from './hooks/useEmergency';
 import Calculator from './components/Calculator';
 import AlertDashboard from './components/AlertDashboard';
 import ContactsManager from './components/ContactsManager';
+import ProjectReport from './components/ProjectReport';
 import { AnimatePresence, motion } from 'framer-motion';
 
 function AppContent() {
   const { status } = useEmergency();
-  const [screen, setScreen] = useState<'APP' | 'SETTINGS'>('APP');
+  const [screen, setScreen] = useState<'APP' | 'SETTINGS' | 'REPORT'>('APP');
 
   useEffect(() => {
     const handleOpenSettings = () => setScreen('SETTINGS');
@@ -56,7 +57,20 @@ function AppContent() {
               exit={{ opacity: 0, x: -100 }}
               className="h-full w-full overflow-y-auto"
             >
-              <ContactsManager onBack={() => setScreen('APP')} />
+              <ContactsManager 
+                onBack={() => setScreen('APP')} 
+                onOpenReport={() => setScreen('REPORT')}
+              />
+            </motion.div>
+          ) : screen === 'REPORT' ? (
+            <motion.div
+              key="report"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              className="h-full w-full overflow-y-auto bg-black"
+            >
+              <ProjectReport onBack={() => setScreen('SETTINGS')} />
             </motion.div>
           ) : (
             <motion.div
